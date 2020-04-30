@@ -1,10 +1,10 @@
 [Unit]
-Description=eth validator
+Description=eth-validator
 
 [Service]
 Type=simple
-ExecStart=sh /prysm/prysm.sh validator --keystore-path=$HOME/.eth2validator --password=changeme
-ExecStop=
+ExecStart=/prysm/prysm-validator-service.sh start
+ExecStop=/prysm/prysm-validator-service.sh stop
 Restart=always
 RestartSec=2
 

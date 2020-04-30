@@ -1,0 +1,12 @@
+[Unit]
+Description=eth-beacon
+
+[Service]
+Type=simple
+ExecStart=/prysm/prysm-beacon-service.sh start
+ExecStop=/prysm/prysm-beacon-service.sh stop
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=sysinit.target

@@ -10,7 +10,7 @@
     dest: /prysm/prysm.sh
     mode: '0744'
 
-- name: Transfer beacon.service
+- name: Transfer eth-beacon.service
   template:
     src: eth-beacon.service
     dest: /etc/systemd/system/eth-beacon.service
@@ -18,7 +18,7 @@
     owner: root
     group: root
 
-- name: Transfer validator.service
+- name: Transfer eth-validator.service
   template:
     src: eth-validator.service
     dest: /etc/systemd/system/eth-validator.service
@@ -34,6 +34,13 @@
     owner: root
     group: root
 
+- name: Create creds file
+  lineinfile:
+    dest: /prysm/creds
+    line: "{{ creds }}"
+    regexp: ".*"
+    create: yes
+
 - name: Reload systemd files
   command: systemctl daemon-reload
   become: yes
@@ -44,3 +51,14 @@
   with_items:
     - eth-beacon.service
     - eth-validator.service
+
+- name: Generate validator key
+  commmand: ./prysm.sh validator --keystore-path=$HOME/.eth2validator --password={{ creds }}
+  register: reg_output
+
+- name: Create reg data file
+  lineinfile:
+    dest: /prysm/reg_data
+    line: "{{ reg_output }}"
+    regexp: ".*"
+    create: yes
