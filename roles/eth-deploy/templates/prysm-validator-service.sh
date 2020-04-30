@@ -29,7 +29,8 @@ start() {
 	KIND="$service_name"
 	echo -n $"Starting $service_name : "
 	cred=$(cat $prysm_cred)
-	$prysm_service validator --keystore-path=$service_dir/validator --password=$cred
+	$prysm_service validator --keystore-path=$service_dir/validator --password=$cred & pid=$!
+	echo "$pid" >> $prysm_pid_file
 	echo "."
 	return 0
 }

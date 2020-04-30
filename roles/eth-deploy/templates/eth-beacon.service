@@ -3,8 +3,8 @@ Description=eth-beacon
 
 [Service]
 Type=simple
-ExecStart=/prysm/prysm-beacon-service.sh start
-ExecStop=/prysm/prysm-beacon-service.sh stop
+ExecStart=/opt/prysm-beacon-service.sh start
+ExecStop=/opt/prysm-beacon-service.sh stop
 Restart=always
 RestartSec=2
 

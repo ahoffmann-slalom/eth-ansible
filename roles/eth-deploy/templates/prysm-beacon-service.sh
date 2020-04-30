@@ -17,7 +17,8 @@ RETVAL=0
 start() {
 	KIND="$service_name"
 	echo -n $"Starting $service_name : "
-	$prysm_service beacon-chain --datadir=$service_dir/beacon-chain
+	$prysm_service beacon-chain --datadir=$service_dir/beacon-chain & pid=$!
+	echo "$pid" >> $prysm_pid_file
 	echo "."
 	return 0
 }

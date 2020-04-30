@@ -1,0 +1,5 @@
+---
+  # eth-deploy role
+  - hosts: all
+    roles:
+      - { role: eth-deploy }

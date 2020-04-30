@@ -1,3 +1,9 @@
+- name: Update all packages
+  yum:
+    name: '*'
+    state: latest
+  become: yes
+
 - name: Create prysm directory
   file:
     path: /prysm
@@ -22,6 +28,22 @@
   template:
     src: eth-validator.service
     dest: /etc/systemd/system/eth-validator.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer prysm-beacon-service.sh
+  template:
+    src: prysm-beacon-service.sh
+    dest: /opt/prysm-beacon-service.sh
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer prysm-validator-service.sh
+  template:
+    src: prysm-validator-service.sh
+    dest: /opt/prysm-beacon-service.sh
     mode: '0744'
     owner: root
     group: root
@@ -53,12 +75,12 @@
     - eth-validator.service
 
 - name: Generate validator key
-  commmand: ./prysm.sh validator --keystore-path=$HOME/.eth2validator --password={{ creds }}
+  commmand: ./prysm.sh validator --keystore-path=$HOME/.eth2validator --password={{ creds }} >> /prysm/reg_data.txt
   register: reg_output
 
 - name: Create reg data file
   lineinfile:
-    dest: /prysm/reg_data
+    dest: /prysm/reg_data2.txt
     line: "{{ reg_output }}"
     regexp: ".*"
     create: yes

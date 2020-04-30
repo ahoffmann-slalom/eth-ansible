@@ -1,0 +1,8 @@
+# Tasks for eth-deploy role
+
+
+- name: Eth-Deploy vars
+  include_vars: "{{ ansible_distribution }}.yml"
+
+- name: Eth-Deploy main tasks
+  include_tasks: "{{ ansible_distribution }}.yml"

@@ -3,8 +3,8 @@ Description=eth-validator
 
 [Service]
 Type=simple
-ExecStart=/prysm/prysm-validator-service.sh start
-ExecStop=/prysm/prysm-validator-service.sh stop
+ExecStart=/opt/prysm-validator-service.sh start
+ExecStop=/opt/prysm-validator-service.sh stop
 Restart=always
 RestartSec=2
 
