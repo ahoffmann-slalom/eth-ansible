@@ -1,0 +1,12 @@
+[Unit]
+Description=eth validator
+
+[Service]
+Type=simple
+ExecStart=sh /prysm/prysm.sh validator --keystore-path=$HOME/.eth2validator --password=changeme
+ExecStop=
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=sysinit.target

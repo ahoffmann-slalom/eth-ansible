@@ -1,0 +1,46 @@
+- name: Create prysm directory
+  file:
+    path: /prysm
+    state: directory
+    mode: '0755'
+
+- name: Download prysm
+  get_url:
+    url: https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh
+    dest: /prysm/prysm.sh
+    mode: '0744'
+
+- name: Transfer beacon.service
+  template:
+    src: eth-beacon.service
+    dest: /etc/systemd/system/eth-beacon.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer validator.service
+  template:
+    src: eth-validator.service
+    dest: /etc/systemd/system/eth-validator.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer service-check.sh
+  template:
+    src: service-check.sh
+    dest: prysm/service-check.sh"
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Reload systemd files
+  command: systemctl daemon-reload
+  become: yes
+
+- name: Enable services
+  command: systemctl enable {{ item }}
+  become: yes
+  with_items:
+    - eth-beacon.service
+    - eth-validator.service
