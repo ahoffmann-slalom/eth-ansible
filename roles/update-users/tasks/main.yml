@@ -1,0 +1,4 @@
+# Tasks for update-users role
+
+- name: Update-Users main tasks
+  include_tasks: "{{ ansible_distribution }}.yml"

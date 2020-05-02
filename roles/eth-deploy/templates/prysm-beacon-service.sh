@@ -1,7 +1,7 @@
 #!/bin/bash
 # description: Starts and stops the Prysm Beacon service
 
-service_dir="/prysm"
+service_dir="/home/eth_usr/prysm"
 service_name="eth-beacon"
 prysm_service=${service_dir}/prysm.sh
 prysm_pid_file=${service_dir}/prysm-beacon.pid
@@ -15,10 +15,9 @@ RETVAL=0
 
 
 start() {
-	KIND="$service_name"
 	echo -n $"Starting $service_name : "
-	$prysm_service beacon-chain --datadir=$service_dir/beacon-chain & pid=$!
-	echo "$pid" >> $prysm_pid_file
+	$prysm_service beacon-chain --datadir=$service_dir/beacon-chain &
+	echo $!> $prysm_pid_file
 	echo "."
 	return 0
 }
@@ -31,6 +30,7 @@ stop() {
 		if [ -n "$pid" -a -d /proc/$pid ]
 		then
 			kill $pid
+			sudo rm -rf $prysm_pid_file
 		fi
 	fi
 	echo "."

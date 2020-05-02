@@ -1,0 +1,13 @@
+- name: create eth group
+  group:
+    name: eth
+    state: present
+
+- name: create eth user
+  user:
+    create_home: yes
+    comment: beacon-validator user
+    home: /home/eth_usr
+    name: eth_usr
+    group: eth
+    state: present

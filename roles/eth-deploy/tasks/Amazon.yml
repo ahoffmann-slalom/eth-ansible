@@ -2,19 +2,27 @@
   yum:
     name: '*'
     state: latest
-  become: yes
+
+- name: Install shasum
+  yum:
+    name: perl-Digest-SHA
+    state: present
 
 - name: Create prysm directory
   file:
-    path: /prysm
+    path: /home/eth_usr/prysm
     state: directory
-    mode: '0755'
+    mode: '0744'
+    owner: eth_usr
+    group: eth
 
 - name: Download prysm
   get_url:
     url: https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh
-    dest: /prysm/prysm.sh
+    dest: /home/eth_usr/prysm/prysm.sh
     mode: '0744'
+    owner: eth_usr
+    group: eth
 
 - name: Transfer eth-beacon.service
   template:
@@ -43,44 +51,45 @@
 - name: Transfer prysm-validator-service.sh
   template:
     src: prysm-validator-service.sh
-    dest: /opt/prysm-beacon-service.sh
+    dest: /opt/prysm-validator-service.sh
     mode: '0744'
     owner: root
     group: root
 
-- name: Transfer service-check.sh
+- name: Transfer status-check.sh
   template:
-    src: service-check.sh
-    dest: prysm/service-check.sh"
+    src: status-check.sh
+    dest: /opt/status-check.sh
     mode: '0744'
     owner: root
     group: root
 
 - name: Create creds file
   lineinfile:
-    dest: /prysm/creds
+    dest: /home/eth_usr/prysm/cred
     line: "{{ creds }}"
     regexp: ".*"
     create: yes
+    mode: '0640'
+    owner: eth_usr
+    group: eth
 
 - name: Reload systemd files
   command: systemctl daemon-reload
-  become: yes
 
 - name: Enable services
   command: systemctl enable {{ item }}
-  become: yes
   with_items:
     - eth-beacon.service
     - eth-validator.service
 
 - name: Generate validator key
-  commmand: ./prysm.sh validator --keystore-path=$HOME/.eth2validator --password={{ creds }} >> /prysm/reg_data.txt
-  register: reg_output
-
-- name: Create reg data file
-  lineinfile:
-    dest: /prysm/reg_data2.txt
-    line: "{{ reg_output }}"
-    regexp: ".*"
-    create: yes
+  become:
+  shell: |
+    /home/eth_usr/prysm/
+    ./prysm.sh validator accounts create --keystore-path=/prysm/validator --password={{ creds }} > {{ item }}.txt
+  with_items:
+    - reg_1
+    - reg_2
+    - reg_3
+    - reg_4

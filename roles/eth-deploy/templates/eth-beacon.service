@@ -2,11 +2,11 @@
 Description=eth-beacon
 
 [Service]
-Type=simple
+Type=forking
 ExecStart=/opt/prysm-beacon-service.sh start
 ExecStop=/opt/prysm-beacon-service.sh stop
-Restart=always
-RestartSec=2
+ExecReload=/opt/prysm-beacon-service.sh restart
+RemainAfterExit=yes
+StandardOutput=journal
 
 [Install]
-WantedBy=sysinit.target

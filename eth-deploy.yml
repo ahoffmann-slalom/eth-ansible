@@ -1,5 +1,7 @@
 ---
-  # eth-deploy role
+  # linux_base.yml
   - hosts: all
+    become: yes
     roles:
+      - { role: update-users }
       - { role: eth-deploy }

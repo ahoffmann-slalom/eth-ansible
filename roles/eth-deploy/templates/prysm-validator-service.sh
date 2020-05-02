@@ -1,7 +1,7 @@
 #!/bin/bash
 # description: Starts and stops the Prysm Validator service
 
-service_dir="/prysm"
+service_dir="/home/eth_usr/prysm"
 service_name="eth-validator"
 prysm_service=${service_dir}/prysm.sh
 prysm_pid_file=${service_dir}/prysm-validator.pid
@@ -26,11 +26,10 @@ RETVAL=0
 
 
 start() {
-	KIND="$service_name"
 	echo -n $"Starting $service_name : "
 	cred=$(cat $prysm_cred)
-	$prysm_service validator --keystore-path=$service_dir/validator --password=$cred & pid=$!
-	echo "$pid" >> $prysm_pid_file
+	$prysm_service validator --keystore-path=$service_dir/validator --password=$cred &
+	echo $!> $prysm_pid_file
 	echo "."
 	return 0
 }
@@ -43,6 +42,7 @@ stop() {
 		if [ -n "$pid" -a -d /proc/$pid ]
 		then
 			kill $pid
+			sudo rm -rf $prysm_pid_file
 		fi
 	fi
 	echo "."
