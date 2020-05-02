@@ -3,6 +3,8 @@ Description=eth-beacon
 
 [Service]
 Type=forking
+User=eth_usr
+Group=eth
 ExecStart=/opt/prysm-beacon-service.sh start
 ExecStop=/opt/prysm-beacon-service.sh stop
 ExecReload=/opt/prysm-beacon-service.sh restart

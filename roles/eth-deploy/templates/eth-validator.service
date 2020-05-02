@@ -3,6 +3,8 @@ Description=eth-beacon
 
 [Service]
 Type=forking
+User=eth_usr
+Group=eth
 ExecStart=/opt/prysm-validator-service.sh start
 ExecStop=/opt/prysm-validator-service.sh stop
 ExecReload=/opt/prysm-validator-service.sh restart

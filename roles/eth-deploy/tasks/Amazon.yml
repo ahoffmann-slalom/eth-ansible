@@ -45,16 +45,16 @@
     src: prysm-beacon-service.sh
     dest: /opt/prysm-beacon-service.sh
     mode: '0744'
-    owner: root
-    group: root
+    owner: eth_usr
+    group: eth
 
 - name: Transfer prysm-validator-service.sh
   template:
     src: prysm-validator-service.sh
     dest: /opt/prysm-validator-service.sh
     mode: '0744'
-    owner: root
-    group: root
+    owner: eth_usr
+    group: eth
 
 - name: Transfer status-check.sh
   template:
@@ -84,9 +84,9 @@
     - eth-validator.service
 
 - name: Generate validator key
-  become:
+  become_user: eth_usr
   shell: |
-    /home/eth_usr/prysm/
+    cd /home/eth_usr/prysm/
     ./prysm.sh validator accounts create --keystore-path=/prysm/validator --password={{ creds }} > {{ item }}.txt
   with_items:
     - reg_1
