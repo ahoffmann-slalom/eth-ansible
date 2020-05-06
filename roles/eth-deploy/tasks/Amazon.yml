@@ -8,6 +8,18 @@
     name: perl-Digest-SHA
     state: present
 
+- name: Install go
+  yum:
+    name: go
+    state: present
+
+- name: Install ethdo pre-req's
+  command: sudo yum install build-essential libstdc++6
+  sudo yum install libstdc++6
+
+- name: install ethdo
+  command: GO111MODULE=on go get github.com/wealdtech/ethdo
+
 - name: Create prysm directory
   file:
     path: /home/eth_usr/prysm
