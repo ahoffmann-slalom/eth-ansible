@@ -1,28 +1,6 @@
-- name: Update all packages
-  yum:
-    name: '*'
-    state: latest
-
-- name: Install shasum
-  yum:
-    name: perl-Digest-SHA
-    state: present
-
-- name: Install go
-  yum:
-    name: go
-    state: present
-
-- name: Install ethdo pre-req's
-  command: sudo yum install build-essential libstdc++6
-  sudo yum install libstdc++6
-
-- name: install ethdo
-  command: GO111MODULE=on go get github.com/wealdtech/ethdo
-
 - name: Create prysm directory
   file:
-    path: /home/eth_usr/prysm
+    path: /bc-vol/prysm
     state: directory
     mode: '0744'
     owner: eth_usr
@@ -31,7 +9,7 @@
 - name: Download prysm
   get_url:
     url: https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh
-    dest: /home/eth_usr/prysm/prysm.sh
+    dest: /bc-vol/prysm/prysm.sh
     mode: '0744'
     owner: eth_usr
     group: eth
@@ -78,7 +56,7 @@
 
 - name: Create creds file
   lineinfile:
-    dest: /home/eth_usr/prysm/cred
+    dest: /bc-vol/prysm/cred
     line: "{{ creds }}"
     regexp: ".*"
     create: yes
@@ -98,7 +76,7 @@
 - name: Generate validator key
   become_user: eth_usr
   shell: |
-    cd /home/eth_usr/prysm/
+    cd /bc-vol/prysm/
     ./prysm.sh validator accounts create --keystore-path=/prysm/validator --password={{ creds }} > {{ item }}.txt
   with_items:
     - reg_1

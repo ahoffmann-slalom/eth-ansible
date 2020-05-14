@@ -1,7 +1,7 @@
 #!/bin/bash
 # description: Starts and stops the Prysm Beacon service
 
-service_dir="/home/eth_usr/prysm"
+service_dir="/bc-vol/prysm"
 service_name="eth-beacon"
 prysm_service=${service_dir}/prysm.sh
 prysm_pid_file=${service_dir}/prysm-beacon.pid
