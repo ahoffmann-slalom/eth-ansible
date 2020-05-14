@@ -1,0 +1,17 @@
+- name: Update all packages
+  yum:
+    name: '*'
+    state: latest
+
+- name: Install shasum
+  yum:
+    name: perl-Digest-SHA
+    state: present
+
+- name: Create /bc-vol and mount /dev/xvdf to it
+  mount:
+    path: /bc-vol
+    src: /dev/xvdf
+    fstype: ext4
+    opts: -t
+    state: mounted
