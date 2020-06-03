@@ -14,30 +14,6 @@
     owner: eth_usr
     group: eth
 
-- name: Transfer eth-beacon.service
-  template:
-    src: eth-beacon.service
-    dest: /etc/systemd/system/eth-beacon.service
-    mode: '0744'
-    owner: root
-    group: root
-
-- name: Transfer eth-validator.service
-  template:
-    src: eth-validator.service
-    dest: /etc/systemd/system/eth-validator.service
-    mode: '0744'
-    owner: root
-    group: root
-
-- name: Transfer prysm-beacon-service.sh
-  template:
-    src: prysm-beacon-service.sh
-    dest: /opt/prysm-beacon-service.sh
-    mode: '0744'
-    owner: eth_usr
-    group: eth
-
 - name: Transfer prysm-validator-service.sh
   template:
     src: prysm-validator-service.sh
@@ -64,6 +40,98 @@
     owner: eth_usr
     group: eth
 
+- name: Generate validator key
+  become_user: eth_usr
+  shell: |
+    cd /bc-vol/prysm/
+    ./prysm.sh validator accounts create --keystore-path=/bc-vol/prysm/validator --password={{ creds }} > {{ item }}.txt
+  with_items:
+    - reg_1
+    - reg_2
+    - reg_3
+    - reg_4
+
+- name: create prometheus directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0744'
+    owner: prometheus
+    group: eth
+  with_items:
+    - /etc/prometheus
+    - /var/lib/prometheus
+
+- name: download prometheus
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.18.1/prometheus-2.18.1.linux-amd64.tar.gz
+    dest: /etc/prometheus
+
+- name: Extract prometheus
+  unarchive:
+    src: /etc/prometheus/prometheus-2.18.1.linux-amd64.tar.gz
+    dest: /etc/prometheus
+
+- name: copy prometheus binaries
+  copy:
+    src: /etc/prometheus/prometheus-2.18.1.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus-2.18.1.linux-amd64/prometheus
+    owner: prometheus
+    group: eth
+    mode: '0744'
+
+- name: copy promtool binaries
+  copy:
+    src: /etc/prometheus/prometheus-2.18.1.linux-amd64/promtool
+    dest: /usr/local/bin/prometheus-2.18.1.linux-amd64/promtool
+    owner: prometheus
+    group: eth
+    mode: '0744'
+
+- name: delete prometheus tar
+  file:
+    path: /etc/prometheus/prometheus-2.18.1.linux-amd64.tar.gz
+    state: absent
+
+- name: Transfer eth-beacon.service
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: eth
+    mode: '0744'
+
+- name: download node exporter
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.0.0-rc.1/node_exporter-1.0.0-rc.1.linux-amd64.tar.gz
+    dest: /usr/local/bin
+
+- name: Extract node exporter
+  unarchive:
+    src: /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64.tar.gz
+    dest: /usr/local/bin/
+
+- name: Move node_exporter dir
+  copy:
+    src: /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64/node_explorer
+    dest: /usr/local/bin/
+    owner: node_exporter
+    group: eth
+    mode: '0774'
+
+- name: delete node_exporter files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64
+    - /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64.tar.gz
+
+- name: install grafana
+  yum:
+    name: grafana
+    state: present
+
 - name: Reload systemd files
   command: systemctl daemon-reload
 
@@ -72,14 +140,46 @@
   with_items:
     - eth-beacon.service
     - eth-validator.service
+    - prometheus.service
+    - node-exporter.service
+    - granana-server
 
-- name: Generate validator key
-  become_user: eth_usr
-  shell: |
-    cd /bc-vol/prysm/
-    ./prysm.sh validator accounts create --keystore-path=/prysm/validator --password={{ creds }} > {{ item }}.txt
-  with_items:
-    - reg_1
-    - reg_2
-    - reg_3
-    - reg_4
+- name: Transfer eth-beacon.service
+  template:
+    src: eth-beacon.service
+    dest: /etc/systemd/system/eth-beacon.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer eth-validator.service
+  template:
+    src: eth-validator.service
+    dest: /etc/systemd/system/eth-validator.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer prysm-beacon-service.sh
+  template:
+    src: prysm-beacon-service.sh
+    dest: /opt/prysm-beacon-service.sh
+    mode: '0744'
+    owner: eth_usr
+    group: eth
+
+- name: Transfer prometheus.service
+  template:
+    src: prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    mode: '0744'
+    owner: root
+    group: root
+
+- name: Transfer node-exporter.service
+  template:
+    src: node-exporter.service
+    dest: /etc/systemd/system/node-exporter.service
+    mode: '0744'
+    owner: root
+    group: root

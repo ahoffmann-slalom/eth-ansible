@@ -1,5 +1,7 @@
 [Unit]
 Description=eth-beacon
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=forking
@@ -12,3 +14,4 @@ RemainAfterExit=yes
 StandardOutput=journal
 
 [Install]
+WantedBy=multi-user.target
