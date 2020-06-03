@@ -20,14 +20,6 @@
     group: eth
     state: present
 
-- name: create prometheus user
-  user:
-    create_home: yes
-    comment: prometheus user
-    name: prometheus
-    group: eth
-    state: present
-
 - name: create node_exporter user
   user:
     create_home: yes
