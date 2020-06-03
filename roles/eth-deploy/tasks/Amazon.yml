@@ -1,6 +1,6 @@
 - name: Create prysm directory
   file:
-    path: /bc-vol/prysm
+    path: /bc-vol/prysm/validator
     state: directory
     mode: '0744'
     owner: eth_usr
@@ -61,6 +61,8 @@
   with_items:
     - /etc/prometheus
     - /var/lib/prometheus
+    - /usr/local/bin/prometheus-2.18.1.linux-amd64/prometheus
+    - /usr/local/bin/prometheus-2.18.1.linux-amd64/promtool
 
 - name: download prometheus
   get_url:
@@ -113,7 +115,7 @@
 
 - name: Move node_exporter dir
   copy:
-    src: /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64/node_explorer
+    src: /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64/node_exporter
     dest: /usr/local/bin/
     owner: node_exporter
     group: eth
@@ -127,28 +129,21 @@
     - /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64
     - /usr/local/bin/node_exporter-1.0.0-rc.1.linux-amd64.tar.gz
 
+- name: update repo
+  template:
+    src: grafana.repo
+    dest: /etc/yum.repos.d/grafana.repo
+
 - name: install grafana
   yum:
     name: grafana
     state: present
 
-- name: Reload systemd files
-  command: systemctl daemon-reload
-
-- name: Enable services
-  command: systemctl enable {{ item }}
-  with_items:
-    - eth-beacon.service
-    - eth-validator.service
-    - prometheus.service
-    - node-exporter.service
-    - granana-server
-
 - name: Transfer eth-beacon.service
   template:
     src: eth-beacon.service
     dest: /etc/systemd/system/eth-beacon.service
-    mode: '0744'
+    mode: '0644'
     owner: root
     group: root
 
@@ -156,7 +151,7 @@
   template:
     src: eth-validator.service
     dest: /etc/systemd/system/eth-validator.service
-    mode: '0744'
+    mode: '0644'
     owner: root
     group: root
 
@@ -172,7 +167,7 @@
   template:
     src: prometheus.service
     dest: /etc/systemd/system/prometheus.service
-    mode: '0744'
+    mode: '0644'
     owner: root
     group: root
 
@@ -180,6 +175,18 @@
   template:
     src: node-exporter.service
     dest: /etc/systemd/system/node-exporter.service
-    mode: '0744'
+    mode: '0644'
     owner: root
     group: root
+
+- name: Reload systemd files
+  command: systemctl daemon-reload
+
+- name: Enable services
+  command: systemctl enable {{ item }}
+  with_items:
+    - eth-beacon.service
+    - eth-validator.service
+    - prometheus.service
+    - node-exporter.service
+    - grafana-server

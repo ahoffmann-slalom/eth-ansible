@@ -1,4 +1,4 @@
 ---
 #master playbook
 
-- include: eth-deploy.yml
+- include: deploy.yml

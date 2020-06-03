@@ -3,5 +3,6 @@
   - hosts: all
     become: yes
     roles:
-      - { role: update-users }
-      - { role: eth-deploy }
+      - base-image
+      - update-users
+      - eth-deploy

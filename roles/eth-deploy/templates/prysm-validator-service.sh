@@ -17,7 +17,7 @@ test -e  $prysm_cred || {
 	exit 1
 }
 
-test -e  $prysm_cred/validator || {
+test -e  $service_dir/validator || {
 	echo "$service_name validator keystore not configured"
 	exit 1
 }
